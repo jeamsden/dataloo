@@ -5,15 +5,18 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 import pandas as pd
+import data_processor
 
 #counter_info = pd.read_csv('EcoCounters.csv')
-counter_info = pd.read_csv('https://opendata.arcgis.com/datasets/a5e1adba2e5545a9b4f0a1d198cd0498_0.csv')
-counter_info = counter_info.sort_values(by='LOCATION')
+#counter_info = pd.read_csv('https://opendata.arcgis.com/datasets/a5e1adba2e5545a9b4f0a1d198cd0498_0.csv')
+#counter_info = counter_info.sort_values(by='LOCATION')
 
 #counter_data = pd.read_csv('City_of_Waterloo_Trail_Counter_Data.csv')
-counter_data = pd.read_csv('https://opendata.arcgis.com/datasets/5d41afff252e45b5b5fe7fc3fd5df3ab_0.csv')
-counter_data['DATE'] = pd.to_datetime(counter_data['DATE']).dt.date
-counter_data = counter_data.groupby(by=['DATE', 'LOC_ID']).sum().reset_index()
+#counter_data = pd.read_csv('https://opendata.arcgis.com/datasets/5d41afff252e45b5b5fe7fc3fd5df3ab_0.csv')
+#counter_data['DATE'] = pd.to_datetime(counter_data['DATE']).dt.date
+#counter_data = counter_data.groupby(by=['DATE', 'LOC_ID']).sum().reset_index()
+
+counter_data, counter_info = data_processor.get_counter_data()
 
 combo_options = []
 value_list = []
@@ -45,7 +48,7 @@ app.layout = html.Div([
             dcc.Dropdown(
                 id='counter_combo',
                 options=combo_options,
-                value=[2, 3, 5, 6, 10, 12],
+                value=[2, 'BORDEN AVE S', 'CHERRY ST', 'QUEEN ST S'],
                 multi=True
             ),
         ], className='six columns'),
