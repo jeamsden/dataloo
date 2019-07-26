@@ -6,6 +6,7 @@ from dash.dependencies import Input, Output
 
 import pandas as pd
 import data_processor
+from data_proc import get_data
 
 #counter_info = pd.read_csv('EcoCounters.csv')
 #counter_info = pd.read_csv('https://opendata.arcgis.com/datasets/a5e1adba2e5545a9b4f0a1d198cd0498_0.csv')
@@ -16,7 +17,8 @@ import data_processor
 #counter_data['DATE'] = pd.to_datetime(counter_data['DATE']).dt.date
 #counter_data = counter_data.groupby(by=['DATE', 'LOC_ID']).sum().reset_index()
 
-counter_data, counter_info = data_processor.get_counter_data()
+counter_data = get_data('counter_readings')
+counter_info = get_data('counters')
 
 combo_options = []
 value_list = []
