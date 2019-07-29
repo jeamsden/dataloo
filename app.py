@@ -36,6 +36,7 @@ app.layout = html.Div([
     html.H1('Dataloo'),
     dcc.Markdown(children=markdown_text),
     html.H2('Pedestrian and Cyclist Traffic Data'),
+    html.P("Now with data from " + str(len(counter_info)) + " counters across Kitchener and Waterloo!") ,
     
     html.Div([
         html.Div([
