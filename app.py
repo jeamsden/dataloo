@@ -5,20 +5,13 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 import pandas as pd
-import data_processor
+from data_processor import get_counter_data
 from data_proc import get_data
-
-#counter_info = pd.read_csv('EcoCounters.csv')
-#counter_info = pd.read_csv('https://opendata.arcgis.com/datasets/a5e1adba2e5545a9b4f0a1d198cd0498_0.csv')
-#counter_info = counter_info.sort_values(by='LOCATION')
-
-#counter_data = pd.read_csv('City_of_Waterloo_Trail_Counter_Data.csv')
-#counter_data = pd.read_csv('https://opendata.arcgis.com/datasets/5d41afff252e45b5b5fe7fc3fd5df3ab_0.csv')
-#counter_data['DATE'] = pd.to_datetime(counter_data['DATE']).dt.date
-#counter_data = counter_data.groupby(by=['DATE', 'LOC_ID']).sum().reset_index()
 
 counter_data = get_data('counter_readings')
 counter_info = get_data('counters')
+
+counter_data['DATE'] = pd.to_datetime(counter_data['DATE'], infer_datetime_format=True)
 
 combo_options = []
 value_list = []
@@ -102,11 +95,13 @@ app.layout = html.Div([
     html.Div(id='display-value'),
     dcc.Graph(id='traffic_graph'),
     dcc.Graph(id='traffic_summary'),
+    dcc.Graph(id='traffic_by_year_summary'),
 ])
 
 @app.callback(
     [Output('traffic_graph', 'figure'),
-    Output('traffic_summary', 'figure')],
+    Output('traffic_summary', 'figure'),
+    Output('traffic_by_year_summary', 'figure')],
     [Input('counter_combo', 'value'),
     Input('traffic_type_radio', 'value'),
     Input('legend_radio', 'value'),
@@ -114,16 +109,20 @@ app.layout = html.Div([
     ])
 
 def update_graph(combo_choices, traffic_type, legend_radio, agg_type):
-    print(combo_choices)
     if legend_radio == 'Show':
         legend_radio_value = True
     elif legend_radio == 'Hide':
         legend_radio_value = False
     filtered_df = counter_data.loc[counter_data['LOC_ID'].isin(combo_choices)]
+    test_df = filtered_df.copy(deep=True)
+    test_df['YEAR'] = test_df['DATE'].dt.year
+    test_df = test_df.groupby(by=['LOC_ID', 'YEAR']).sum().reset_index()
     graph_data_dict = []
+    traffic_by_year_summary_dict = []
     for choice in combo_choices:
         temp_dict = {'x': filtered_df.loc[filtered_df['LOC_ID'] == choice]['DATE'], 'y': filtered_df.loc[filtered_df['LOC_ID'] == choice][traffic_type], 'type': 'line', 'name': better_dict[choice]}
         graph_data_dict.append(temp_dict)
+        
     for agg in agg_type:
         if agg == 'mean':
             temp_dict = {'x': filtered_df.groupby(by='DATE').mean()[traffic_type].reset_index()['DATE'], 'y': filtered_df.groupby(by='DATE').mean()[traffic_type].reset_index()[traffic_type], 'type': 'line', 'name': 'Mean'}
@@ -143,6 +142,8 @@ def update_graph(combo_choices, traffic_type, legend_radio, agg_type):
     for choice in combo_choices:
         temp_dict = {'x': [better_dict[choice]], 'y': summary_df.loc[summary_df['LOC_ID'] == choice][traffic_type], 'type': 'bar', 'name': better_dict[choice]}
         graph_summary_dict_list.append(temp_dict)
+        traffic_by_year_summary_temp_dict = {'x': test_df.loc[test_df['LOC_ID'] == choice ]['YEAR'], 'y': test_df.loc[test_df['LOC_ID'] == choice ][traffic_type], 'type': 'bar', 'name': better_dict[choice]}
+        traffic_by_year_summary_dict.append(traffic_by_year_summary_temp_dict)
     return ({
         'data': graph_data_dict,
             'layout': {
@@ -166,6 +167,20 @@ def update_graph(combo_choices, traffic_type, legend_radio, agg_type):
                 },
                 'showlegend': False,
                 'bargroupgap': 0.5
+            }
+    },
+    {
+        'data': traffic_by_year_summary_dict,
+            'layout': {
+                'title': 'Total by Year by Counter',
+                'legend': {
+                    #'orientation': 'v',
+                    #'x': 0,
+                    #'y': 1
+                },
+                'showlegend': False,
+                #'bargroupgap': 0.5,
+                'barmode': 'group,'
             }
     })
 
