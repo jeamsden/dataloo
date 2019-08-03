@@ -28,6 +28,7 @@ for index, row in counter_info.iterrows():
     ])
 
 def update_graph(combo_choices, traffic_type, legend_radio, agg_type):
+    print(combo_choices)
     if legend_radio == 'Show':
         legend_radio_value = True
     elif legend_radio == 'Hide':
@@ -113,4 +114,4 @@ def update_counter(children):
     for index, row in counter_info.iterrows():
         temp_dict = {'label': row['LOCATION'], 'value': row['ID']}
         combo_options.append(temp_dict)
-    return [combo_options, [2, 'BORDEN AVE S', 'CHERRY ST', 'QUEEN ST S']]
+    return [combo_options, [9, 6, 5, 1, 4, 3]]

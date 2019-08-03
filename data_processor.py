@@ -6,7 +6,10 @@ datasets = {
         'steps': [
             '''df = pd.read_csv('https://opendata.arcgis.com/datasets/a5e1adba2e5545a9b4f0a1d198cd0498_0.csv')''',
             #'''df = pd.read_csv('EcoCounters.csv')''',
-            '''df = df[['LOCATION', 'LONG', 'LAT', 'ID']]'''
+            '''df = df[['LOCATION', 'LONG', 'LAT', 'ID']]''',
+            '''df['LOCATION'] = df['LOCATION'].replace('Laurel/Trans Canada Trail at Bearinger Rd', 'Laurel Trail at Bearinger Rd.')''',
+            '''df['LOCATION'] = df['LOCATION'].replace('Laurel/Trans Canada Trail at Columbia St. W.', 'Laurel Trail at Columbia St. W.')''',
+            '''df['LOCATION'] = df['LOCATION'].replace('Trans Canada/Laurel Trail at Silver Lake Bridge', 'Laurel Trail at Silver Lake Bridge')'''
         ],
         'df': None
     },
@@ -18,9 +21,9 @@ datasets = {
             '''df = df.groupby(by=['STATION_LOCATION_DESCRIPTION', 'X_COORD_LL_DD', 'Y_COORD_LL_DD']).first().reset_index()[['STATION_LOCATION_DESCRIPTION', 'X_COORD_LL_DD', 'Y_COORD_LL_DD']]''',
             '''df = df.rename(columns={'STATION_LOCATION_DESCRIPTION': 'LOCATION', 'X_COORD_LL_DD': 'LONG', 'Y_COORD_LL_DD': 'LAT'})''',
             '''df['ID'] = df['LOCATION']''',
-            '''df['LOCATION'] = df['LOCATION'].replace('CHERRY ST', 'Iron Horse/Trans Canada Trail at Cherry St. S.')''',
-            '''df['LOCATION'] = df['LOCATION'].replace('BORDEN AVE S', 'Iron Horse/Trans Canada Trail at Borden St. S.')''',
-            '''df['LOCATION'] = df['LOCATION'].replace('QUEEN ST S', 'Iron Horse/Trans Canada Trail at Queen St. S.')'''
+            '''df['LOCATION'] = df['LOCATION'].replace('CHERRY ST', 'Iron Horse Trail at Cherry St. S.')''',
+            '''df['LOCATION'] = df['LOCATION'].replace('BORDEN AVE S', 'Iron Horse Trail at Borden St. S.')''',
+            '''df['LOCATION'] = df['LOCATION'].replace('QUEEN ST S', 'Iron Horse Trail at Queen St. S.')'''
         ]
     },
     'counters': {
@@ -69,7 +72,13 @@ def composite_process(dataset_key):
     df_list = []
     for sub_dataset in datasets[dataset_key]['steps']:
         df_list.append(simple_process(sub_dataset))
-    return pd.concat(df_list).reset_index(drop=True)
+    df = pd.concat(df_list)
+    try:
+        df = df.sort_values(by='LOCATION')
+    except:
+        pass
+    df = df.reset_index(drop=True)
+    return df
 
 def get_data(dataset_key):
     if datasets[dataset_key]['type'] == 'composite':
