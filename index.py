@@ -6,7 +6,7 @@ from app import app
 import layouts
 import callbacks
 
-server = app.server
+server=app.server
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -16,12 +16,11 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/':
-         return layouts.home_layout
-    elif pathname == '/cycling_overview':
+    if pathname == '/cycling_overview':
          return layouts.cycling_overview_layout
     else:
-        return '404'
+        return layouts.home_layout
 
 if __name__ == '__main__':
+    
     app.run_server(debug=True)
