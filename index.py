@@ -6,7 +6,8 @@ from app import app
 import layouts
 import callbacks
 
-#server=app.server
+# This line seems to be needed by heroku
+server=app.server
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
