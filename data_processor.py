@@ -78,6 +78,10 @@ def composite_process(dataset_key):
     except:
         pass
     df = df.reset_index(drop=True)
+    try:
+        df['DATE'] = pd.to_datetime(df['DATE'], infer_datetime_format=True)
+    except:
+        pass
     return df
 
 def get_data(dataset_key):
@@ -86,8 +90,7 @@ def get_data(dataset_key):
     elif datasets[dataset_key]['type'] == 'simple':
         return simple_process(dataset_key)
 
-def get_cycling_infrstructure():
-    cow_df = pd.read_csv()
+
 
 
        

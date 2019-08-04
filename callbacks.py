@@ -3,6 +3,7 @@ from dash.dependencies import Input, Output
 from app import app
 import pandas as pd
 import data_processor
+import plotly.graph_objs as go
 counter_data = data_processor.get_data('counter_readings')
 counter_info = data_processor.get_data('counters')
 
@@ -28,7 +29,6 @@ for index, row in counter_info.iterrows():
     ])
 
 def update_graph(combo_choices, traffic_type, legend_radio, agg_type):
-    print(combo_choices)
     if legend_radio == 'Show':
         legend_radio_value = True
     elif legend_radio == 'Hide':
@@ -105,7 +105,7 @@ def update_graph(combo_choices, traffic_type, legend_radio, agg_type):
     })
 
 @app.callback(
-    [Output('counter_combo', 'options'), Output('counter_combo', 'value')],
+    [Output('counter_combo', 'options'), Output('counter_combo', 'value'), Output('activity', 'figure')],
     [Input('test1', 'children')
     ])
 
@@ -114,4 +114,24 @@ def update_counter(children):
     for index, row in counter_info.iterrows():
         temp_dict = {'label': row['LOCATION'], 'value': row['ID']}
         combo_options.append(temp_dict)
-    return [combo_options, [9, 6, 5, 1, 4, 3]]
+    
+    activity_df = counter_data
+    activity_df['dayofweek'] = activity_df['DATE'].dt.dayofweek
+    activity_df['month'] = activity_df['DATE'].dt.month
+    activity_df = activity_df.groupby(by=['month', 'dayofweek']).mean().reset_index()
+
+    trace = go.Heatmap(
+        x=activity_df['month'],
+        y=activity_df['dayofweek'],
+        z=activity_df['CYCLIST_TOTAL'],
+        colorscale='Greens',
+        colorbar={"title": "Cyclist Traffic"},
+        showscale=True)
+
+    figure = {"data": [trace],
+            "layout": go.Layout(
+                title="Mean Cyclist Traffic by Day of Week and Month of Year (All Counters all Years)",
+                xaxis={"title": "Month"},
+                yaxis={"title": "Day of Week", "tickmode": "array"},
+            )}
+    return [combo_options, [9, 6, 5, 1, 4, 3], figure]

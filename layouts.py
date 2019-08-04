@@ -3,13 +3,8 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 import custom_core_components as ccc
 import pandas as pd
-import data_processor
 
 fluid_setting = False # A global setting for fluid containers
-
-counter_data = data_processor.get_data('counter_readings')
-
-counter_data['DATE'] = pd.to_datetime(counter_data['DATE'], infer_datetime_format=True)
 
 home_layout = html.Div([
     ccc.navbar,
@@ -64,7 +59,7 @@ cycling_overview_layout = html.Div([
                 dcc.Dropdown(
                     id='counter_combo',
                     options=[],
-                    value=[1, 2, 3],
+                    value=[],
                     multi=True
                 ),
             ]),
@@ -115,36 +110,10 @@ cycling_overview_layout = html.Div([
                 dcc.Graph(id='traffic_graph'),
                 dcc.Graph(id='traffic_summary'),
                 dcc.Graph(id='traffic_by_year_summary'),
+                dcc.Graph(id='activity'),
             ])
         ])
-
-
-
-
     ], fluid=fluid_setting),
-    
-    
-    
-    html.Div([
-        html.Div([
-            html.Label('Pick Counter:'),
-        ], className='six columns'),
-
-        html.Div([
-            html.Label('Traffic Type:'),
-        ], className='two columns'),
-
-        html.Div([
-            html.Label('Display Aggregate:'),
-        ], className='two columns'),
-        
-        html.Div([
-            
-        ], className='two columns')
-    ], className='row'),
-
-    html.Div(id='my-div'),
-    html.Div(id='display-value'),
 ])
 
 layout2 = html.Div([
