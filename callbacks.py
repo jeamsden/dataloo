@@ -125,7 +125,7 @@ def update_counter(children):
         y=activity_df['dayofweek'],
         z=activity_df['CYCLIST_TOTAL'],
         colorscale='Greens',
-        colorbar={"title": "Cyclist Traffic"},
+        colorbar={"title": "Mean Cyclist Traffic per Day"},
         showscale=True)
 
     figure = {"data": [trace],
