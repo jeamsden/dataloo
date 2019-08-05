@@ -41,7 +41,7 @@ cycling_overview_layout = html.Div([
     dbc.Container([
         dbc.Row([
             dbc.Col([
-                html.H1('Pedestrian and Cyclist Traffic Data'),
+                html.H1('Cyclist Overview'),
             ])
         ], className="mt-4"),
         dbc.Row([
