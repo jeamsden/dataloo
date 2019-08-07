@@ -41,15 +41,18 @@ cycling_overview_layout = html.Div([
     dbc.Container([
         dbc.Row([
             dbc.Col([
-                html.H1('Cyclist Overview'),
+                html.H1('Cycling Overview'),
             ])
         ], className="mt-4"),
         dbc.Row([
             dbc.Col([
                 html.P([
                     "Now with data from ",
-                    html.Span('16', id='test1'),
+                    html.Span('XX', id='counter_count'),
                     " counters across Kitchener and Waterloo!"
+                ]),
+                html.P([
+                    "A note about the data: most counters provide data in 15 minute intervals while a few some provide data in one hour intervals. Data has been resampled to 15 minute intervals to preserve the higher level of detail. Because of this, resampled counters may show fractional pedestrians or cyclists in an interval. Linear resampling has been used to preserve the integrity of totals."
                 ]),
             ])
         ], className="mt-4"),
@@ -59,7 +62,7 @@ cycling_overview_layout = html.Div([
                 dcc.Dropdown(
                     id='counter_combo',
                     options=[],
-                    value=[],
+                    value=[1],
                     multi=True
                 ),
             ]),
@@ -104,6 +107,23 @@ cycling_overview_layout = html.Div([
                     #labelStyle={'display': 'inline-block'}
                 )
             ]),
+            dbc.Col([
+                html.Label('Resolution:'),
+                dcc.RadioItems(
+                    id='resolution',
+                    options=[
+                        {'label': 'Year', 'value': 'Y'},
+                        {'label': 'Quarter', 'value': '3M'},
+                        {'label': 'Month', 'value': 'M'},
+                        {'label': 'Week', 'value': 'W'},
+                        {'label': 'Day', 'value': 'D'},
+                        {'label': 'Hour', 'value': 'H'},
+                        {'label': '15 Minutes', 'value': '15T'},
+                    ],
+                    value='W',
+                    #labelStyle={'display': 'inline-block'}
+                )
+            ]),
         ]),
         dbc.Row([
             dbc.Col([
@@ -111,10 +131,11 @@ cycling_overview_layout = html.Div([
                 dcc.Graph(id='traffic_summary'),
                 dcc.Graph(id='traffic_by_year_summary'),
                 dcc.Graph(id='activity'),
+                dcc.Graph(id='activity_hour_week'),
             ])
         ])
     ], fluid=fluid_setting),
-])
+], id='main_div')
 
 layout2 = html.Div([
     ccc.navbar,
